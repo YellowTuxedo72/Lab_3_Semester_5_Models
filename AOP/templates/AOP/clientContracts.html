@@ -1,0 +1,18 @@
+<h1>Список договоров с клиентами</h1>
+
+{% if contracts %}
+<table>
+    <tr>
+        <th>Номер договора</th>
+        <th>ФИО клиента</th>
+    </tr>
+    {% for contract in contracts %}
+    <tr>
+        <td>{{ contract.contract_number }}</td>
+        <td>{{ contract.client_id.surname }} {{ contract.client_id.name }} {{ contract.client_id.patronymic }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Договоров нет.</p>
+{% endif %}

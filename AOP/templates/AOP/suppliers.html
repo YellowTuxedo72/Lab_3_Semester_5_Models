@@ -1,0 +1,26 @@
+<h1>Список подрядчиков</h1>
+
+{% if suppliers %}
+<table>
+    <tr>
+        <th>Код подрядчика</th>
+        <th>Наименование</th>
+        <th>ИНН</th>
+        <th>Адрес</th>
+        <th>Email</th>
+        <th>Телефон</th>
+    </tr>
+    {% for supplier in suppliers %}
+    <tr>
+        <td>{{ supplier.supplier_id }}</td>
+        <td>{{ supplier.name }}</td>
+        <td>{{ supplier.inn }}</td>
+        <td>{{ supplier.address }}</td>
+        <td>{{ supplier.email }}</td>
+        <td>{{ supplier.phone }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Подрядчиков нет</p>
+{% endif %}

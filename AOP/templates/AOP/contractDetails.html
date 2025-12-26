@@ -1,0 +1,28 @@
+<h1>Детали договоров</h1>
+
+{% if details %}
+<table>
+    <tr>
+        <th>Номер договора</th>
+        <th>Клиент</th>
+        <th>Услуга</th>
+        <th>Подрядчик</th>
+        <th>Стоимость услуги, руб.</th>
+        <th>Количество</th>
+        <th>Дата предоставления услуги</th>
+    </tr>
+    {% for d in details %}
+    <tr>
+        <td>{{ d.contract.contract_number }}</td>
+        <td>{{ d.contract.client_id.surname }} {{ d.contract.client_id.name }} {{ d.contract.client_id.patronymic }}</td>
+        <td>{{ d.provided_service_id.service_id.name }}</td>
+        <td>{{ d.provided_service_id.supplier_id.name }}</td>
+        <td>{{ d.provided_service_id.service_cost }}</td>
+        <td>{{ d.quantity }}</td>
+        <td>{{ d.service_date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Деталей договоров нет</p>
+{% endif %}

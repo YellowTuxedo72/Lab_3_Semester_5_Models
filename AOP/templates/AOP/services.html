@@ -1,0 +1,20 @@
+<h1>Список услуг</h1>
+
+{% if services %}
+<table>
+    <tr>
+        <th>Код услуги</th>
+        <th>Наименование услуги</th>
+        <th>Описание</th>
+    </tr>
+    {% for service in services %}
+    <tr>
+        <td>{{ service.service_id }}</td>
+        <td>{{ service.name }}</td>
+        <td>{{ service.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Услуг нет</p>
+{% endif %}

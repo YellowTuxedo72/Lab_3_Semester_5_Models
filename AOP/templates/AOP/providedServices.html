@@ -1,0 +1,22 @@
+<h1>Список предоставляемых услуг</h1>
+
+{% if services %}
+<table>
+    <tr>
+        <th>Код услуги</th>
+        <th>Наименование услуги</th>
+        <th>Подрядчик</th>
+        <th>Стоимость, руб.</th>
+    </tr>
+    {% for ps in services %}
+    <tr>
+        <td>{{ ps.provided_service_id }}</td>
+        <td>{{ ps.service_id.name }}</td>
+        <td>{{ ps.supplier_id.name }}</td>
+        <td>{{ ps.service_cost }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Предоставляемых услуг нет</p>
+{% endif %}

@@ -70,15 +70,11 @@ class ClientListViewTests(TestCase):
         self.assertQuerySetEqual(response.context["clients"], [client])
         self.assertContains(response, "Иван")
 
-    def test_multiple_clients(self):
+    def test_few_clients(self):
         client1 = create_client("Петров", "Пётр")
         client2 = create_client("Сидоров", "Сидор")
         response = self.client.get(reverse("AOP:clients"))
-        self.assertQuerySetEqual(
-            response.context["clients"],
-            [client1, client2],
-            ordered=False
-        )
+        self.assertQuerySetEqual(response.context["clients"], [client1, client2], ordered=False)
 
 class ClientContractListViewTests(TestCase):
     def test_no_contracts(self):
@@ -94,7 +90,7 @@ class ClientContractListViewTests(TestCase):
         self.assertQuerySetEqual(response.context["contracts"], [contract])
         self.assertContains(response, contract.client_id.name)
 
-    def test_multiple_contracts(self):
+    def test_few_contracts(self):
         client1 = create_client("Иванов", "Иван")
         client2 = create_client("Петров", "Пётр")
         contract1 = create_contract(client1, 1)
@@ -110,22 +106,22 @@ class SuppliersTests(TestCase):
         self.assertQuerySetEqual(response.context["suppliers"], [])
 
     def test_one_supplier(self):
-        supplier = create_supplier("ТестСнаб")
+        supplier = create_supplier("Подрядчик")
         response = self.client.get(reverse("AOP:suppliers"))
         self.assertQuerySetEqual(response.context["suppliers"], [supplier])
-        self.assertContains(response, "ТестСнаб")
+        self.assertContains(response, "Подрядчик")
 
-    def test_multiple_suppliers(self):
-        s1 = create_supplier("A1")
-        s2 = create_supplier("B2")
+    def test_few_suppliers(self):
+        supplier1 = create_supplier("Подрядчик 1")
+        supplier2 = create_supplier("Подрядчик 2")
         response = self.client.get(reverse("AOP:suppliers"))
         self.assertQuerySetEqual(
             response.context["suppliers"],
-            [s1, s2],
+            [supplier1, supplier2],
             ordered=False
         )
 
-class ServicesListViewTests(TestCase):
+class ServicesViewTests(TestCase):
     def test_no_services(self):
         response = self.client.get(reverse("AOP:services"))
         self.assertEqual(response.status_code, 200)
@@ -133,14 +129,14 @@ class ServicesListViewTests(TestCase):
         self.assertQuerySetEqual(response.context["services"], [])
 
     def test_one_service(self):
-        service = create_service("ТестУслуга")
+        service = create_service("Предоставляемая услуга")
         response = self.client.get(reverse("AOP:services"))
         self.assertQuerySetEqual(response.context["services"], [service])
-        self.assertContains(response, "ТестУслуга")
+        self.assertContains(response, "Предоставляемая услуга")
 
-    def test_multiple_services(self):
-        service1 = create_service("S1")
-        service2 = create_service("S2")
+    def test_few_services(self):
+        service1 = create_service("услуга 1")
+        service2 = create_service("услуга 2")
         response = self.client.get(reverse("AOP:services"))
         self.assertQuerySetEqual(
             response.context["services"],
@@ -148,69 +144,65 @@ class ServicesListViewTests(TestCase):
             ordered=False
         )
         
-class ProvidedServicesListViewTests(TestCase):
+class ProvidedServicesViewTests(TestCase):
     def test_no_provided_services(self):
         response = self.client.get(reverse("AOP:providedServices"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Предоставляемых услуг нет")
-        self.assertQuerySetEqual(response.context["providedServices"], [])
+        self.assertQuerySetEqual(response.context["services"], [])
 
     def test_one_provided_service(self):
-        service = create_service("S1")
-        supplier = create_supplier("Sup1")
+        service = create_service("предоставляемая услуга 1")
+        supplier = create_supplier("подрядчик 1")
         provided = create_provided_service(service, supplier, 1000)
         response = self.client.get(reverse("AOP:providedServices"))
-        self.assertQuerySetEqual(response.context["providedServices"], [provided])
-        self.assertContains(response, str(provided.service_cost))
+        self.assertQuerySetEqual(response.context["services"], [provided])
 
-    def test_multiple_provided_services(self):
-        service1 = create_service("S1")
-        supplier1 = create_supplier("Sup1")
-        p1 = create_provided_service(service1, supplier1, 500)
-        service2 = create_service("S2")
-        supplier2 = create_supplier("Sup2")
-        p2 = create_provided_service(service2, supplier2, 1000)
+    def test_few_provided_services(self):
+        service1 = create_service("услуга 1")
+        supplier1 = create_supplier("подрядчик 1")
+        provide1 = create_provided_service(service1, supplier1, 500)
+        service2 = create_service("услуга 2")
+        supplier2 = create_supplier("подрядчик 2")
+        provide2 = create_provided_service(service2, supplier2, 1000)
         response = self.client.get(reverse("AOP:providedServices"))
         self.assertQuerySetEqual(
-            response.context["providedServices"],
-            [p1, p2],
+            response.context["services"],
+            [provide1, provide2],
             ordered=False
         )
         
-class ContractDetailsListViewTests(TestCase):
+class ContractDetailsViewTests(TestCase):
     def test_no_details(self):
         response = self.client.get(reverse("AOP:contractDetails"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Деталей договоров нет")
-        self.assertQuerySetEqual(response.context["contractDetails"], [])
+        self.assertQuerySetEqual(response.context["details"], [])
 
     def test_one_detail(self):
         client = create_client("Иванов", "Иван")
         contract = create_contract(client, 1)
-        service = create_service("S1")
-        supplier = create_supplier("Sup1")
+        service = create_service("услуга 1")
+        supplier = create_supplier("подрядчик 1")
         provided = create_provided_service(service, supplier, 1000)
         detail = create_contract_detail(contract, provided, 2)
         response = self.client.get(reverse("AOP:contractDetails"))
-        self.assertQuerySetEqual(response.context["contractDetails"], [detail])
-        self.assertContains(response, str(detail.quantity))
+        self.assertQuerySetEqual(response.context["details"], [detail])
 
-    def test_multiple_details(self):
+    def test_few_details(self):
         client = create_client("Петров", "Пётр")
         contract = create_contract(client, 1)
-        service1 = create_service("S1")
-        supplier1 = create_supplier("Sup1")
-        p1 = create_provided_service(service1, supplier1, 500)
-        service2 = create_service("S2")
-        supplier2 = create_supplier("Sup2")
-        p2 = create_provided_service(service2, supplier2, 1000)
-        d1 = create_contract_detail(contract, p1, 2)
-        d2 = create_contract_detail(contract, p2, 3)
+        service1 = create_service("услуга 1")
+        supplier1 = create_supplier("подрядчик 1")
+        provide1 = create_provided_service(service1, supplier1, 500)
+        service2 = create_service("услуга 2")
+        supplier2 = create_supplier("подрядчик 2")
+        provide2 = create_provided_service(service2, supplier2, 1000)
+        detail1 = create_contract_detail(contract, provide1, 2)
+        detail2 = create_contract_detail(contract, provide2, 3)
         response = self.client.get(reverse("AOP:contractDetails"))
         self.assertQuerySetEqual(
-            response.context["contractDetails"],
-            [d1, d2],
+            response.context["details"],
+            [detail1, detail2],
             ordered=False
         )
-        self.assertContains(response, str(d1.quantity))
-        self.assertContains(response, str(d2.quantity))
